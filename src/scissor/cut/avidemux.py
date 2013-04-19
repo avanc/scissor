@@ -1,5 +1,6 @@
 
 import subprocess
+import os
 
 import logging
 logger = logging.getLogger(__name__)
@@ -55,7 +56,11 @@ class Avidemux():
 
     def cut(self, cutlist):
         script=self.createScript(cutlist)
-        self.run(script)
+        result=self.run(script)
+        if (result):
+            return os.path.exists(cutlist.output_filename)
+        else:
+            return False
         
     def run(self, script):
         logger.debug("Starting avidemux")
@@ -63,19 +68,15 @@ class Avidemux():
         script_file=self.tmpFolder+"/project.js"
         f=open(script_file,"w")
         f.write(script)
-        f.close
+        f.close()
         
-#        child=subprocess.Popen([self.executable, "--nogui", "--force-smart", "--run", script_file, "--quit"],
-#                               bufsize=0, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        child=subprocess.Popen(["/usr/bin/avidemux2_cli", "--nogui", "--run", script_file, "--quit"])
-        child.wait()
-#        child=subprocess.Popen(["/usr/bin/avidemux2_cli", "--nogui", "--run", script_path, "--quit"])
-#        child.wait()
+        child=subprocess.Popen([self.executable, "--nogui", "--force-smart", "--run", script_file, "--quit"],
+                               bufsize=0, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         
         if (self.verbose):
             output=True
             while (output):
-                output=child.stderr.readline()
+                output=child.stdout.readline()
                 logger.debug(output)
         else:
             pass
@@ -85,4 +86,7 @@ class Avidemux():
       
         if (success!=0):
             logger.warning("Cutting not successful")
+            return False
+        
+        return True
         
