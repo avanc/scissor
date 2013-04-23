@@ -1,4 +1,5 @@
 import subprocess
+import os
 import os.path
 
 
@@ -11,11 +12,14 @@ logger.setLevel(logging.DEBUG)
 # ToDo: Raise exceptions
 
 class OtrDecoder():
-    def __init__(self, username, password):
+    def __init__(self, username, password, working_dir="/tmp/otrdecoder/"):
         self.executable="/usr/bin/otrdecoder"
         self.username=username
         self.password=password
-        self.output_path="/tmp"
+        self.output_path=working_dir
+        if (not os.path.exists(self.output_path)):
+            os.makedirs(self.output_path)
+
         
     
     

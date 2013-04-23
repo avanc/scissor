@@ -84,4 +84,7 @@ class CutListAt:
         tmpCutlist.id=cutListId
         return tmpCutlist
            
-        
+           
+def getCutList(name):
+    server=CutListAt();
+    return server.getCutListByName(name) 

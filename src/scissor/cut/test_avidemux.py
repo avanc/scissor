@@ -19,20 +19,20 @@ class TestAvidemux(unittest.TestCase):
         test_cutlist=cutlist.CutList()
         test_cutlist.cuts=[ [9061, 20363], [44402, 10857] ]
         test_cutlist.fps=25.0
-        test_cutlist.input_filename="/home/klomp/tmp/cutlist/2_Broke_Girls_13.04.09_21-15_pro7_30_TVOON_DE.mpg.HQ.avi"
-        test_cutlist.output_filename="/tmp/output.avi"
+        input_filename="/home/klomp/tmp/cutlist/2_Broke_Girls_13.04.09_21-15_pro7_30_TVOON_DE.mpg.HQ.avi"
+        output_filename="/tmp/output.avi"
         
-        cutter.createScript(test_cutlist)
+        cutter.createScript(input_filename, output_filename, test_cutlist)
         
     def test_cutVideo(self):
         cutter=avidemux.Avidemux()
         test_cutlist=cutlist.CutList()
         test_cutlist.cuts=[ [9061, 20363], [44402, 10857] ]
         test_cutlist.fps=25.0
-        test_cutlist.input_filename="/home/klomp/tmp/cutlist/2_Broke_Girls_13.04.09_21-15_pro7_30_TVOON_DE.mpg.HQ.avi"
-        test_cutlist.output_filename="/tmp/output.avi"
+        input_filename="/home/klomp/tmp/cutlist/2_Broke_Girls_13.04.09_21-15_pro7_30_TVOON_DE.mpg.HQ.avi"
+        output_filename="/tmp/output.avi"
         
-        result=cutter.cut(test_cutlist)
+        result=cutter.cut(input_filename, output_filename, test_cutlist)
         self.assertTrue(result, "Not detected failed cut.")
 
     def test_cutVideoFailing(self):
@@ -40,10 +40,10 @@ class TestAvidemux(unittest.TestCase):
         test_cutlist=cutlist.CutList()
         test_cutlist.cuts=[ [9061, 20363], [44402, 10857] ]
         test_cutlist.fps=25.0
-        test_cutlist.input_filename="/home/klomp/tmp/cutlist/xxxxxxxxx"
-        test_cutlist.output_filename="/tmp/output2.avi"
+        input_filename="/home/klomp/tmp/cutlist/xxxxxxxxx"
+        output_filename="/tmp/output2.avi"
         
-        result=cutter.cut(test_cutlist)
+        result=cutter.cut(input_filename, output_filename, test_cutlist)
         self.assertFalse(result, "Not detected failed cut.")
 
 

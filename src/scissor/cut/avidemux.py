@@ -4,7 +4,7 @@ import os
 
 import logging
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+
 
 # Information on avidemux scripting at
 # http://www.avidemux.org/admWiki/doku.php?id=tutorial:scripting_tutorial
@@ -42,33 +42,36 @@ class Avidemux():
         self.verbose=True
         self.tmpFolder="/tmp"
     
-    def createScript(self, cutlist):
+    def createScript(self, input_file, output_file, cutlist):
         segments=""
         for cut in cutlist.cuts:
             segments+=segment_template.format(start_frame=cut[0], durationframes=cut[1])
         
-        script=script_template.format(input_filename=cutlist.input_filename, segments=segments, output_filename=cutlist.output_filename)
+        script=script_template.format(input_filename=input_file, segments=segments, output_filename=output_file)
         
         #logger.debug(script)
         
         return script
 
 
-    def cut(self, cutlist):
-        script=self.createScript(cutlist)
-        result=self.run(script)
-        if (result):
-            return os.path.exists(cutlist.output_filename)
-        else:
-            return False
-        
-    def run(self, script):
-        logger.debug("Starting avidemux")
-        
-        script_file=self.tmpFolder+"/project.js"
+    def cut(self, input_file, output_file, cutlist):
+        script=self.createScript(input_file, output_file, cutlist)
+
+        script_file=self.tmpFolder+"/cutscript_{id}.js".format(id=cutlist.id)
         f=open(script_file,"w")
         f.write(script)
         f.close()
+     
+        result=self.run(script_file)
+
+        if (result):
+            return os.path.exists(output_file)
+        else:
+            return False
+        
+    def run(self, script_file):
+        logger.debug("Starting avidemux")
+        
         
         child=subprocess.Popen([self.executable, "--nogui", "--force-smart", "--run", script_file, "--quit"],
                                bufsize=0, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)

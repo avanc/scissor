@@ -7,6 +7,7 @@ logger.setLevel(logging.DEBUG)
 
 class CutList():
     def __init__(self):
+        self.id=None
         self.suggested_filename=None
         self.input_filename=None
         self.output_filename=None

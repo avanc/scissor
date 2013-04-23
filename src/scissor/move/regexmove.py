@@ -7,8 +7,10 @@ import shutil
 
 
 def move(file, config, dryrun=False):
+    logger.debug("Searching match for {0}".format(file))
     match=None
     for i in range(len(config["list"])):
+        logger.debug("Testing {0}".format(config["list"][i]["regex"]))
         pattern=re.compile(config["list"][i]["regex"])
         if pattern.match(file):
             if (match==None):
