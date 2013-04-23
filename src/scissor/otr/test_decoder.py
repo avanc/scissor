@@ -2,6 +2,10 @@ import unittest
 
 from . import decoder
 
+# Credentials for otr authentication moved to an external file ignored by git
+from . import otr_credentials
+
+
 import logging
 logger = logging.getLogger()
 logging.basicConfig(level=logging.DEBUG)
@@ -10,7 +14,8 @@ logging.basicConfig(level=logging.DEBUG)
 class TestOtrDecoder(unittest.TestCase):
 
     def setUp(self):
-        self.decoder=decoder.OtrDecoder("email", "password")
+
+        self.decoder=decoder.OtrDecoder(otr_credentials.username, otr_credentials.password)
 
 
     def test_decodeFile(self):
