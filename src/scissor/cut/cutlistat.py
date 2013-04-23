@@ -80,6 +80,8 @@ class CutListAt:
         xml_list=self.fetchXmlList(name)
         cutListId=self.getListId(xml_list)
         raw_cutlist=self.fetchCutList(cutListId)
-        return cutlist.parseRaw(raw_cutlist)
+        tmpCutlist = cutlist.parseRaw(raw_cutlist)
+        tmpCutlist.id=cutListId
+        return tmpCutlist
            
         
