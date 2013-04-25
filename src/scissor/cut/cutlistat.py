@@ -80,7 +80,7 @@ class CutListAt(object):
             downloadcount=0.0 if downloadcount==None else float(downloadcount)
             
             weight= rating*ratingcount+downloadcount/4
-            logger.info("Weight={0}*{1}+{2}/4={3}".format(rating, ratingcount, downloadcount, weight))
+            logger.info("Weight[{4}]={0}*{1}+{2}/4={3}".format(rating, ratingcount, downloadcount, weight, cutListId))
             
             if (weight>bestWeight):
                 bestWeight=weight
@@ -97,7 +97,7 @@ class CutListAt(object):
         
         # Workaround, as response has no header. Thus, urlopen does not know the encoding and returns binary data.
         # See http://bugs.python.org/issue13518 for additional information.
-        raw_cutlist=io.TextIOWrapper(raw_cutlist, encoding='utf-8')
+        raw_cutlist=io.TextIOWrapper(raw_cutlist, encoding='iso-8859-15')
         
         return raw_cutlist
     
