@@ -35,12 +35,14 @@ if __name__ == '__main__':
     for inputfile in options.files:
         logger.info("Working on {0}".format(inputfile))
         
+        abs_inputfile = os.path.abspath(inputfile)
+        
         # Decoding
-        (base, extension) = os.path.splitext(inputfile)
+        (base, extension) = os.path.splitext(abs_inputfile)
         if (extension==".otrkey"):
-            uncut_avi=otr.decode(inputfile, configdata["otr"])
+            uncut_avi=otr.decode(abs_inputfile, configdata["otr"])
         else:
-            uncut_avi = inputfile
+            uncut_avi = abs_inputfile
 
         #Cutting and renaming
         if options.cut:        
