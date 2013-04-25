@@ -15,19 +15,17 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA  02110-1301, USA.
 
+class WrongFileTypeError(Exception):
+    """Exception raised for wrong filetype.
 
-import json
-import os.path
+    Attributes:
+        filename -- filename of wrong type
+        expected -- Expected file type
+    """
 
-import logging
-logger = logging.getLogger(__name__)
-
-
-def parseConfig(jsonstring):
-    data=json.loads(jsonstring)
-    return data
-
-def readConfig(filename):
-    fp=open(os.path.expanduser(filename))
-    data=json.load(fp)
-    return data
+    def __init__(self, filename, expected):
+        self.filename = filename
+        self.expected = expected
+        
+    def __str__(self):
+        return "Got '{0}' but expected '*{1}'.".format(self.filename, self.expected)

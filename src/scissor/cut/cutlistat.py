@@ -1,3 +1,21 @@
+# Copyright (C) 2013 Sven Klomp (mail@klomp.eu)
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+# MA  02110-1301, USA.
+
+
 import urllib.request
 import xml.etree.ElementTree as ET
 import io
@@ -6,21 +24,24 @@ from . import cutlist
 
 import logging
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
-getListUrlByName = "http://www.cutlist.at/getxml.php?name={0}"
-getListUrlBySize = "http://www.cutlist.at/getxml.php?ofsb={0}"
-getFileUrl = "http://www.cutlist.at/getfile.php?id={0}"
 
 
-class CutListAt:
+LIST_URL_BY_NAME = "http://www.cutlist.at/getxml.php?name={0}"
+LIST_URL_BY_SIZE = "http://www.cutlist.at/getxml.php?ofsb={0}"
+FILE_URL_BY_ID = "http://www.cutlist.at/getfile.php?id={0}"
+
+
+class CutListAt(object):
     def __init__(self):
-        self.base_url="http://www.cutlist.at/getxml.php"
+        self._list_url_by_name = LIST_URL_BY_NAME
+        self._list_url_by_size = LIST_URL_BY_SIZE
+        self._file_url_by_id = FILE_URL_BY_ID
+        self._timeout=10
     
     def fetchXmlList(self, name):
         logger.debug("Fetching list for {0}".format(name))
-        url = getListUrlByName.format(name)
-        xml_list = urllib.request.urlopen(url)
+        url = self._list_url_by_name.format(name)
+        xml_list = urllib.request.urlopen(url, timeout=self._timeout)
         return xml_list
 
     def getListId(self, xml_list):
@@ -35,14 +56,18 @@ class CutListAt:
         
         # Check if attribute count is the same as contained list descriptions 
         if ( int(root.attrib["count"]) != len(root) ):
-            logger.warning("Attribute 'count' and number of contained cutlist descriptions differ.")
-            return None
+            logger.error("Attribute 'count' and number of contained cutlist descriptions differ.")
+            raise cutlist.CutListError("Attribute 'count' and number of contained cutlist descriptions differ.")
+
 
         bestId= None
         bestWeight=-1;
         
         for child in root:
             cutListId=child.find("id").text
+            if cutListId is None:
+                raise cutlist.CutListError("No cutlist Id in list.") 
+            
             logger.debug("Calculating weight for ID {0}".format(cutListId))
             
             rating=child.find("rating").text
@@ -55,7 +80,7 @@ class CutListAt:
             downloadcount=0.0 if downloadcount==None else float(downloadcount)
             
             weight= rating*ratingcount+downloadcount/4
-            logger.debug("Weight={0}*{1}+{2}/4={3}".format(rating, ratingcount, downloadcount, weight))
+            logger.info("Weight={0}*{1}+{2}/4={3}".format(rating, ratingcount, downloadcount, weight))
             
             if (weight>bestWeight):
                 bestWeight=weight
@@ -66,9 +91,9 @@ class CutListAt:
  
     def fetchCutList(self, cutListId):
         logger.debug("Fetching cutlist with ID {0}".format(cutListId))
-        url = getFileUrl.format(cutListId)
+        url = self._file_url_by_id.format(cutListId)
         logger.debug(url)
-        raw_cutlist = urllib.request.urlopen(url)
+        raw_cutlist = urllib.request.urlopen(url, timeout=self._timeout)
         
         # Workaround, as response has no header. Thus, urlopen does not know the encoding and returns binary data.
         # See http://bugs.python.org/issue13518 for additional information.
