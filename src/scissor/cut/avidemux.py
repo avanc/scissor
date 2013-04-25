@@ -37,7 +37,7 @@ app.clearSegments();
 {segments}
 
 app.video.setPostProc(3,3,0);
-app.video.fps1000=25000;
+app.video.fps1000={fpks};
 app.video.codec("Copy","CQ=4","0 ");
 
 app.audio.reset();
@@ -69,7 +69,7 @@ class Avidemux():
         for cut in cutlist.cuts:
             segments+=SEGMENT_TEMPLATE.format(start_frame=cut[0], durationframes=cut[1])
         
-        script=SCRIPT_TEMPLATE.format(input_filename=input_file, segments=segments, output_filename=output_file)
+        script=SCRIPT_TEMPLATE.format(input_filename=input_file, segments=segments, fpks=cutlist.fps*1000, output_filename=output_file)
         
         return script
 
@@ -103,7 +103,7 @@ class Avidemux():
             raise ChildProcessError()
         
     def run(self, script_file):
-        logger.debug("Starting avidemux")
+        logger.info("Starting avidemux")
         
         
         child=subprocess.Popen([self.executable, "--nogui", "--force-smart", "--run", script_file, "--quit"],
