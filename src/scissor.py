@@ -18,6 +18,7 @@
 # MA  02110-1301, USA.
 
 import os.path
+import shutil
 
 from scissor import parameter
 from scissor import config
@@ -41,6 +42,7 @@ if __name__ == '__main__':
         (base, extension) = os.path.splitext(abs_inputfile)
         if (extension==".otrkey"):
             uncut_avi=otr.decode(abs_inputfile, configdata["otr"])
+            shutil.move(abs_inputfile, configdata["otr"]["working_dir"])
         else:
             uncut_avi = abs_inputfile
 
