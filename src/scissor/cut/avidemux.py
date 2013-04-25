@@ -31,7 +31,7 @@ SCRIPT_TEMPLATE="""//AD <- Needed to identify//
 var app = new Avidemux();
 
 app.load("{input_filename}");
-app.rebuildIndex();
+// app.rebuildIndex();
 
 app.clearSegments();
 {segments}
@@ -69,7 +69,7 @@ class Avidemux():
         for cut in cutlist.cuts:
             segments+=SEGMENT_TEMPLATE.format(start_frame=cut[0], durationframes=cut[1])
         
-        script=SCRIPT_TEMPLATE.format(input_filename=input_file, segments=segments, fpks=cutlist.fps*1000, output_filename=output_file)
+        script=SCRIPT_TEMPLATE.format(input_filename=input_file, segments=segments, fpks=int(cutlist.fps*1000), output_filename=output_file)
         
         return script
 
