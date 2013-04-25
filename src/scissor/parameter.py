@@ -56,6 +56,17 @@ parser.add_argument('--log-level',
                     default="info",
                     help='Log Level: debug, info, warning, error, critical')
 
+parser.add_argument('--no-cutting',
+                    action='store_false',
+                    default=True,
+                    dest='cut',
+                    help='Do not cut files.')
+
+parser.add_argument('--no-moving',
+                    action='store_false',
+                    default=True,
+                    dest='move',
+                    help='Do not move files.')
 
 parser.add_argument('files',
                     metavar='filename',

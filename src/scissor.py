@@ -17,6 +17,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA  02110-1301, USA.
 
+import os.path
 
 from scissor import parameter
 from scissor import config
@@ -35,12 +36,19 @@ if __name__ == '__main__':
         logger.info("Working on {0}".format(inputfile))
         
         # Decoding
-        uncut_avi=otr.decode(inputfile, configdata["otr"])
+        (base, extension) = os.path.splitext(inputfile)
+        if (extension==".otrkey"):
+            uncut_avi=otr.decode(inputfile, configdata["otr"])
+        else:
+            uncut_avi = inputfile
 
-
-        #Cutting and renaming        
-        cut_avi= cut.cut(uncut_avi, configdata["cut"])
+        #Cutting and renaming
+        if options.cut:        
+            cut_avi = cut.cut(uncut_avi, configdata["cut"])
+        else:
+            cut_avi = uncut_avi
         
         #Moving
-        move.move(cut_avi, configdata["move"])
+        if options.move:
+            move.move(cut_avi, configdata["move"])
         
