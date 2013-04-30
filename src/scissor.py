@@ -19,15 +19,54 @@
 
 import os.path
 import shutil
+import re
 
 from scissor import parameter
 from scissor import config
 from scissor import otr
 from scissor import cut
+from scissor.cut import cutlistat
 from scissor.move import regexmove as move
 
 import logging
 logger = logging.getLogger()
+
+def tryDecoding(file, configdata):
+    (base, extension) = os.path.splitext(abs_inputfile)
+    if (extension==".otrkey"):
+        uncut_avi=otr.decode(abs_inputfile, configdata)
+        shutil.move(abs_inputfile, configdata["working_dir"])
+    else:
+        uncut_avi = abs_inputfile
+        
+    return uncut_avi
+
+def rateCut(file):
+    pattern = re.compile(".*_cutlistat([0-9]+).*")
+    match = pattern.match(file)
+    
+    if (match):
+        cutlistid=int(match.group(1))
+        logger.debug(cutlistid)
+        rating=False
+    
+        while (rating is False):
+            rating = input("Rate cut of file {0} --> ".format(file))
+            try:
+                rating = int(rating)
+            except ValueError:
+                print("Enter a valid number between 0 and 5.")
+                rating=False
+            else:
+                if (rating<0 or rating>5):
+                    print("Enter a number between 0 and 5.")
+                    rating=False
+        
+        cutlistat.rateCutList(cutlistid, rating)
+        
+    else:
+        logger.warning("No cutlist ID embedded in filename {0}".format(file))
+
 
 if __name__ == '__main__':
     options = parameter.parse()
@@ -38,21 +77,20 @@ if __name__ == '__main__':
         
         abs_inputfile = os.path.abspath(inputfile)
         
-        # Decoding
-        (base, extension) = os.path.splitext(abs_inputfile)
-        if (extension==".otrkey"):
-            uncut_avi=otr.decode(abs_inputfile, configdata["otr"])
-            shutil.move(abs_inputfile, configdata["otr"]["working_dir"])
+        
+        if options.rate:
+            rateCut(abs_inputfile)
         else:
-            uncut_avi = abs_inputfile
+            uncut_avi = tryDecoding(abs_inputfile, configdata["otr"])
+    
+            #Cutting and renaming
+            if options.cut:        
+                cut_avi = cut.cut(uncut_avi, configdata["cut"])
+            else:
+                cut_avi = uncut_avi
+            
+            #Moving
+            if options.move:
+                move.move(cut_avi, configdata["move"])
+    
 
-        #Cutting and renaming
-        if options.cut:        
-            cut_avi = cut.cut(uncut_avi, configdata["cut"])
-        else:
-            cut_avi = uncut_avi
-        
-        #Moving
-        if options.move:
-            move.move(cut_avi, configdata["move"])
-        

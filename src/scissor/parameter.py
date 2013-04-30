@@ -73,7 +73,11 @@ parser.add_argument('files',
                     nargs='+',   
                     help='List of filenames')
 
-
+parser.add_argument('--rate',
+                    action='store_true',
+                    default=False,
+                    dest='rate',
+                    help='Rate already cut files. Works only if cutlist ID is stored within filename.')
 
 def parse(args=None):
     if args is None:

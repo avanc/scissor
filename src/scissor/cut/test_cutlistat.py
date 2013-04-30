@@ -37,6 +37,11 @@ class TestGetList(unittest.TestCase):
         cutlist=self.server.getCutListByName("2_Broke_Girls_13.04.09_21-15_pro7_30_TVOON_DE.mpg.HQ.avi")
         self.assertEqual(cutlist.cuts, [ [9061, 20363], [44402, 10857] ])
 
+    def test_getCutList(self):
+        cutlist=cutlistat.getCutList("2_Broke_Girls_13.04.09_21-15_pro7_30_TVOON_DE.mpg.HQ.avi")
+        self.assertEqual(cutlist.cuts, [ [9061, 20363], [44402, 10857] ])
+
+
     def test_server_not_available(self):
         self.server._list_url_by_name="http://192.168.111.1/{0}"
         self.server._timeout=1
@@ -47,6 +52,22 @@ class TestGetList(unittest.TestCase):
         self.server._timeout=1
         self.assertRaises(urllib.error.URLError, self.server.fetchXmlList, "2_Broke_Girls_13.04.09_21-15_pro7_30_TVOON_DE.mpg.HQ.avi")
 
+
+    def test_rateCutList(self):
+        #self.server.rateCutList(121212121212, 5)
+        pass
+
+    def test_rateCutListWrongId(self):
+        self.assertRaises(ValueError, self.server.rateCutList, "foo", 5)
+        
+    def test_rateCutListWrongId2(self):
+        self.assertRaises(ValueError, self.server.rateCutList, "1.1", 5)
+
+    def test_rateCutListWrongRating(self):
+        self.assertRaises(ValueError, self.server.rateCutList, "1", -1)
+
+    def test_rateCutListWrongRating2(self):
+        self.assertRaises(ValueError, self.server.rateCutList, "1", 6)
 
     def test_parseXml(self):
         import io

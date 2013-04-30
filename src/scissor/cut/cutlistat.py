@@ -29,6 +29,7 @@ logger = logging.getLogger(__name__)
 LIST_URL_BY_NAME = "http://www.cutlist.at/getxml.php?name={0}"
 LIST_URL_BY_SIZE = "http://www.cutlist.at/getxml.php?ofsb={0}"
 FILE_URL_BY_ID = "http://www.cutlist.at/getfile.php?id={0}"
+RATE_URL_BY_ID="http://www.cutlist.at/rate.php?rate={id}&rating={rating}"
 
 
 class CutListAt(object):
@@ -36,6 +37,7 @@ class CutListAt(object):
         self._list_url_by_name = LIST_URL_BY_NAME
         self._list_url_by_size = LIST_URL_BY_SIZE
         self._file_url_by_id = FILE_URL_BY_ID
+        self._rate_url_by_id = RATE_URL_BY_ID
         self._timeout=10
     
     def fetchXmlList(self, name):
@@ -108,8 +110,38 @@ class CutListAt(object):
         tmpCutlist = cutlist.parseRaw(raw_cutlist)
         tmpCutlist.id=cutListId
         return tmpCutlist
-           
-           
+ 
+    def rateCutList(self, cutlistid, rating):
+        cutlist = int(cutlistid)
+        rating=int(rating)
+        if (rating<0 or rating>5):
+            raise ValueError("Rating must be between 0 and 5, not {0}".format(rating))
+        url=self._rate_url_by_id.format(id=cutlistid, rating=rating);
+        raw_response = urllib.request.urlopen(url, timeout=self._timeout);
+        raw_response=io.TextIOWrapper(raw_response, encoding='iso-8859-15');
+        output=raw_response.readline()
+        logger.debug(output)
+        if (output != "Cutlist wurde bewertet. Vielen Dank!"):
+            raise RatingFailed(cutlistid, output)
+
+class RatingFailed(Exception):
+    """Exception raised for failed rating.
+
+    Attributes:
+        id -- cutlist id
+    """
+
+    def __init__(self, cutlistid, message):
+        self.cutlistid=cutlistid
+        self.message=message
+        
+    def __str__(self):
+        return "Failed to rate cutlist {0}: {1}".format(self.cutlistid, self.message)
+             
 def getCutList(name):
     server=CutListAt();
-    return server.getCutListByName(name) 
+    return server.getCutListByName(name)
+
+def rateCutList(cutlistid, rating):
+    server=CutListAt();
+    return server.rateCutList(cutlistid, rating)
