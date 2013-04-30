@@ -15,6 +15,9 @@ setup(name='scissor',
       url='http://none',
       packages=['scissor', 'scissor.cut', 'scissor.move', 'scissor.otr'],
       package_dir={'scissor': 'src/scissor'},
-      scripts=['src/scissor.py']
+      scripts=['src/bin/scissor'],
+      license="GPLv2",
+      platform="Linux",
+      long_description=""
      )
 
