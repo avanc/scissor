@@ -1,3 +1,28 @@
-Dependencies:
+Introduction
+============
+
+This is a small script, which can
+* decode otrkey files from http://www.onlinetvrecorder.de
+* cut avi files using cutlists from http://www.cutlist.at
+* rate cutlists (cutlist ID has to be part of the filename)
+* move files depending on regular expressions to sort e.g. series in different folders
+
+Dependencies
+============
+
 * otrdecoder (http://www.onlinetvrecorder.com/)
 * avidemux
+
+Installation
+============
+git clone https://github.com/avanc/scissor.git
+cd scissor
+python setup.py install
+cp config/scissor.conf ~/.scissor.conf
+
+Modify ~/.scissor.conf to your needs.
+
+Usage
+=====
+
+scissor *.otrkey
