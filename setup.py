@@ -12,12 +12,13 @@ setup(name='scissor',
       description='Tool to decode and cut otrkey movies.',
       author='Sven Klomp',
       author_email='mail@klomp.eu',
-      url='http://none',
+      url='https://github.com/avanc/scissor',
       packages=['scissor', 'scissor.cut', 'scissor.move', 'scissor.otr'],
       package_dir={'scissor': 'src/scissor'},
       scripts=['src/bin/scissor'],
+      data_files=[('config', ['config/scissor.cfg'])],
       license="GPLv2",
-      platform="Linux",
+      platforms=["Linux"],
       long_description=""
      )
 
