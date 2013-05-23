@@ -93,6 +93,28 @@ Duration=434.28""")
         logger.debug(mycutlist.cuts)
         self.assertEqual(mycutlist.cuts, [ [9061, 20363], [44402, 10857] ])
 
+
+    def test_parseRawCutListEmptySuggestedMovieName(self):
+        import io
+        
+        raw_cutlist=io.StringIO("""[General]
+ApplyToFile=2_Broke_Girls_13.04.09_21-15_pro7_30_TVOON_DE.mpg.HQ.avi
+FramesPerSecond=25
+NoOfCuts=2
+[Info]
+SuggestedMovieName=
+[Cut0]
+Start=362.44
+Duration=814.52
+[Cut1]
+Start=1776.08
+Duration=434.28""")
+
+        mycutlist=cutlist.parseRaw(raw_cutlist)
+        logger.debug(mycutlist.cuts)
+        self.assertEqual(mycutlist.suggested_filename, None)
+
+
     def test_parseRawMalformedCutList(self):
         import io
         

@@ -38,6 +38,8 @@ def parseRaw(file):
     cutcount=int(config["General"]["NoOfCuts"])
     
     cutlist.suggested_filename=config["Info"]["SuggestedMovieName"]
+    if (cutlist.suggested_filename == ""):
+        cutlist.suggested_filename=None;
     
     for i in range(cutcount):
         section="Cut{0}".format(i)

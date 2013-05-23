@@ -18,6 +18,9 @@
 import os
 import os.path
 
+import logging
+logger = logging.getLogger(__name__)
+
 from . import cutlistat
 from . import avidemux
 
@@ -34,10 +37,13 @@ def cut(input_file, config):
     
     cutlist=cutlistat.getCutList(input_filename)
 
+    output_basename=input_basename+"_cut"
     if ( config["use_suggested_name"]):
-        output_basename=cutlist.suggested_filename
-    else:
-        output_basename=input_basename+"_cut"
+        if (cutlist.suggested_filename==None):
+            logger.warning("Suggested filename was empty.")
+        else:
+            output_basename=cutlist.suggested_filename
+
 
     if ( config["append_cutlist_id"]):
         output_basename+="_cutlistat{id}".format(id=cutlist.id)
