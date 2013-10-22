@@ -27,6 +27,9 @@ from scissor import otr
 from scissor import cut
 from scissor.cut import cutlistat
 from scissor.move import regexmove as move
+from scissor import error
+
+
 
 import logging
 logger = logging.getLogger()
@@ -73,24 +76,26 @@ if __name__ == '__main__':
     configdata=config.readConfig(options.configfile)
     
     for inputfile in options.files:
-        logger.info("Working on {0}".format(inputfile))
-        
-        abs_inputfile = os.path.abspath(inputfile)
-        
-        
-        if options.rate:
-            rateCut(abs_inputfile)
-        else:
-            uncut_avi = tryDecoding(abs_inputfile, configdata["otr"])
-    
-            #Cutting and renaming
-            if options.cut:        
-                cut_avi = cut.cut(uncut_avi, configdata["cut"])
-            else:
-                cut_avi = uncut_avi
+        if (os.path.exists(inputfile)):
+            logger.info("Working on {0}".format(inputfile))
             
-            #Moving
-            if options.move:
-                move.move(cut_avi, configdata["move"])
-    
+            abs_inputfile = os.path.abspath(inputfile)
+            
+            
+            if options.rate:
+                rateCut(abs_inputfile)
+            else:
+                uncut_avi = tryDecoding(abs_inputfile, configdata["otr"])
+        
+                #Cutting and renaming
+                if options.cut:        
+                    cut_avi = cut.cut(uncut_avi, configdata["cut"])
+                else:
+                    cut_avi = uncut_avi
+                
+                #Moving
+                if options.move:
+                    move.move(cut_avi, configdata["move"])
+        else:
+            logger.warning("File not found: {0}".format(inputfile))
 
